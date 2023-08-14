@@ -1,0 +1,384 @@
+---
+title: "Daily interaction between meditation and endometriosis pain and the mindfulness effect on pain interference in activities throughout a brief Mindfulness-Based Intervention."
+format: html
+editor: visual
+---
+
+# Random Intercept-Cross Lag Panel Model
+
+```{r}
+# First five days
+
+RICLPMa <- '
+  # Create between components (random intercepts)
+  RIMed =~ 1*med_1 + 1*med_2 + 1*med_3 + 1*med_4 + 1*med_5 
+  
+   RIPain =~ 1*pain_1 + 1*pain_2 + 1*pain_3 + 1*pain_4 + 1*pain_5
+   
+  # Create within-person centered variables
+  wmed1 =~ 1*med_1
+  wmed2 =~ 1*med_2
+  wmed3 =~ 1*med_3
+  wmed4 =~ 1*med_4
+  wmed5 =~ 1*med_5
+
+  
+  wpain1 =~ 1*pain_1
+  wpain2 =~ 1*pain_2
+  wpain3 =~ 1*pain_3
+  wpain4 =~ 1*pain_4
+  wpain5 =~ 1*pain_5
+
+  
+  # Estimate lagged effects between within-person centered variables
+  
+  wmed2 + wpain2 ~ wmed1 + wpain1
+  wmed3 + wpain3 ~ wmed2 + wpain2
+  wmed4 + wpain4 ~ wmed3 + wpain3
+  wmed5 + wpain5 ~ wmed4 + wpain4
+
+
+  
+  # Estimate covariance between within-person centered variables at first wave
+  wmed1 ~~ wpain1 # Covariance
+  
+  # Estimate covariances between residuals of within-person centered variables 
+  # (i.e., innovations)
+  wmed2 ~~ wpain2
+  wmed3 ~~ wpain3
+  wmed4 ~~ wpain4
+  wmed5 ~~ wpain5
+
+  
+  # Estimate variance and covariance of random intercepts
+  RIMed ~~ RIMed
+  RIPain ~~ RIPain
+  RIMed ~~ RIPain
+
+  # Estimate (residual) variance of within-person centered variables
+  
+  wmed1 ~~ wmed1
+  wpain1 ~~ wpain1  
+  wmed2 ~~ wmed2
+  wpain2 ~~ wpain2
+  wmed3 ~~ wmed3
+  wpain3 ~~ wpain3
+  wmed4 ~~ wmed4
+  wpain4 ~~ wpain4
+  wmed5 ~~ wmed5
+  wpain5 ~~ wpain5
+'
+
+
+RICLPM.fita = lavaan(RICLPMa,
+  data = df.mbi, 
+  missing = "ML",
+  meanstructure = T, 
+  int.ov.free = T
+)
+
+summary(RICLPM.fita)
+fitMeasures(RICLPM.fita)
+parameterEstimates(RICLPM.fita)
+standardizedSolution(RICLPM.fita)
+
+
+
+#Middle days
+RICLPM.mid <- '
+  # Create between components (random intercepts)
+  RIMed =~ 1*med_16 + 1*med_17 + 1*med_18 + 1*med_19 + 1*med_20 
+  
+   RIPain =~ 1*pain_16 + 1*pain_17 + 1*pain_18 + 1*pain_19 + 1*pain_20
+   
+  # Create within-person centered variables
+  wmed16 =~ 1*med_16
+  wmed17 =~ 1*med_17
+  wmed18 =~ 1*med_18
+  wmed19 =~ 1*med_19
+  wmed20 =~ 1*med_20
+
+  
+  wpain16 =~ 1*pain_16
+  wpain17 =~ 1*pain_17
+  wpain18 =~ 1*pain_18
+  wpain19 =~ 1*pain_19
+  wpain20 =~ 1*pain_20
+
+  
+  # Estimate lagged effects between within-person centered variables
+  
+  wmed17 + wpain17 ~ wmed16 + wpain16
+  wmed18 + wpain18 ~ wmed17 + wpain17
+  wmed19 + wpain19 ~ wmed18 + wpain18
+  wmed20 + wpain20 ~ wmed19 + wpain19
+  
+  # Estimate covariance between within-person centered variables at first wave
+  wmed16 ~~ wpain16 # Covariance
+  
+  # Estimate covariances between residuals of within-person centered variables 
+  # (i.e., innovations)
+  wmed17 ~~ wpain17
+  wmed18 ~~ wpain18
+  wmed19 ~~ wpain19
+  wmed20 ~~ wpain20
+
+  
+  # Estimate variance and covariance of random intercepts
+  RIMed ~~ RIMed
+  RIPain ~~ RIPain
+  RIMed ~~ RIPain
+
+  # Estimate (residual) variance of within-person centered variables
+  
+  wmed16 ~~ wmed16
+  wpain16 ~~ wpain16  
+  wmed17 ~~ wmed17
+  wpain17 ~~ wpain17
+  wmed18 ~~ wmed18
+  wpain18 ~~ wpain18
+  wmed19 ~~ wmed19
+  wpain19 ~~ wpain19
+  wmed20 ~~ wmed20
+  wpain20 ~~ wpain20
+
+'
+  
+RICLPM.fit.mid = lavaan(RICLPM.mid,
+  data = df.mbi, 
+  missing = "ML", 
+  meanstructure = T, 
+  int.ov.free = T
+)
+summary(RICLPM.fit.mid, standardized = T)
+
+fitMeasures(RICLPM.fit.mid)
+
+parameterEstimates(RICLPM.fit.mid)
+standardizedSolution(RICLPM.fit.mid)
+
+# Last five days
+
+
+RICLPMb <- '
+  # Create between components (random intercepts)
+  RIMed =~  1*med_26 + 1*med_27 + 1*med_28 + 1*med_29 + 1*med_30
+  
+   RIPain =~  1*pain_26 + 1*pain_27 + 1*pain_28 + 1*pain_29 + 1*pain_30
+   
+  # Create within-person centered variables
+  wmed26 =~ 1*med_26
+  wmed27 =~ 1*med_27
+  wmed28 =~ 1*med_28
+  wmed29 =~ 1*med_29
+  wmed30 =~ 1*med_30
+  
+
+  wpain26 =~ 1*pain_26
+  wpain27 =~ 1*pain_27
+  wpain28 =~ 1*pain_28
+  wpain29 =~ 1*pain_29
+  wpain30 =~ 1*pain_30
+  
+  # Estimate lagged effects between within-person centered variables
+  
+
+  wmed27 + wpain27 ~ wmed26 + wpain26
+  wmed28 + wpain28 ~ wmed27 + wpain27
+  wmed29 + wpain29 ~ wmed28 + wpain28
+  wmed30 + wpain30 ~ wmed29 + wpain29
+  
+  # Estimate covariance between within-person centered variables at first wave
+  wmed26 ~~ wpain26 # Covariance
+  
+  # Estimate covariances between residuals of within-person centered variables 
+  # (i.e., innovations)
+ 
+  wmed27 ~~ wpain27
+  wmed28 ~~ wpain28
+  wmed29 ~~ wpain29
+  wmed30 ~~ wpain30
+  
+  # Estimate variance and covariance of random intercepts
+  RIMed ~~ RIMed
+  RIPain ~~ RIPain
+  RIMed ~~ RIPain
+
+  # Estimate (residual) variance of within-person centered variables
+  
+  wmed26 ~~ wmed26
+  wpain26 ~~ wpain26
+  wmed27 ~~ wmed27  # Residual variance
+  wpain27 ~~ wpain27
+  wmed28 ~~ wmed28
+  wpain28 ~~wpain28
+  wmed29 ~~ wmed29
+  wpain29 ~~wpain29
+  wmed30 ~~ wmed30
+  wpain30 ~~wpain30
+  
+'
+RICLPM.fitb = lavaan(RICLPMb,
+  data = df.mbi, missing = "ML",
+  meanstructure = T, 
+  int.ov.free = T
+)
+
+summary(RICLPM.fitb, standardized = T, rsquare = TRUE)
+
+parameterEstimates(RICLPM.fitb)
+
+fitMeasures(RICLPM.fitb)
+
+stand.RICLPM.b=standardizedSolution(RICLPM.fitb)
+
+
+
+```
+
+# Latent Growth Curve Model
+
+```{r}
+#First five days 
+
+
+pain.inter.mode.raw= '
+#intercept
+i= ~  1*act_interf._1 + 1*act_interf._2 + 1*act_interf._3 + 1*act_interf._4 + 1*act_interf._5
+
+# slope
+s = ~ 0*act_interf._1 + act_interf._2 + act_interf._3 + act_interf._4 + 1*act_interf._5
+
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+
+
+lgc.model.raw=growth(pain.inter.mode.raw,data=df,missing = "ml")
+
+summary(lgc.model.raw)
+fitMeasures(lgc.model.raw)
+parameterestimates(lgc.model.raw)
+
+
+
+#PIres (score subtracting the raw Pain Interference score from the pain intensity score of the same day (Pain interference residual, PIres) 
+
+pain.inter.mode= '
+#intercept
+i= ~ 1*res_1 + 1*res_2 + 1*res_3 + 1*res_4 + 1*res_5 
+
+# slope
+s = ~ 0*res_1 + 1*res_2 + 2*res_3 + 3*res_4 + 4*res_5 
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+lgc.model=growth(pain.inter.mode,data=df_wide,missing = "ml")
+
+summary(lgc.model)
+lgc.par= parameterestimates(lgc.model)
+View(lgc.par)
+fitMeasures(lgc.model)
+
+#Middle five days 
+
+
+#PI
+
+pain.inter.mode.raw.a= '
+#intercept
+i= ~ 1*act_interf._16 + 1*act_interf._17 + 1*act_interf._18 + 1*act_interf._19 + 1*act_interf._20 
+
+# slope
+s = ~ 0*act_interf._16 + act_interf._17 + act_interf._18 + act_interf._19 + 1*act_interf._20 
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+lgc.model.raw.a=growth(pain.inter.mode.raw.a,data=df, missing = "ml")
+
+summary(lgc.model.raw.a)
+parameterestimates(lgc.model.raw.a)
+fitMeasures(lgc.model.raw.a)
+
+
+
+# PIres
+
+pain.inter.modea= '
+#intercept
+i= ~ 1*res_16 + 1*res_17 + 1*res_18 + 1*res_19 + 1*res_20 
+
+# slope
+s = ~ 0*res_16 + 1*res_17 + 2*res_18 + 3*res_19 + 4*res_20 
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+lgc.modela=growth(pain.inter.modea,data=df_wide,missing = "ml")
+
+summary(lgc.modela)
+parameterestimates(lgc.modela)
+fitMeasures(lgc.modela)
+
+
+
+
+#Last five Days
+
+# Raw
+
+
+pain.inter.mode.raw.b= '
+#intercept
+i= ~ 1*act_interf._26 + 1*act_interf._27 + 1*act_interf._28 + 1*act_interf._29 + 1*act_interf._30 
+
+# slope
+s = ~ 0*act_interf._26 + act_interf._27 + act_interf._28 + act_interf._29 + 1*act_interf._30 
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+lgc.model.raw.b=growth(pain.inter.mode.raw.b,data=df, missing = "ml")
+
+summary(lgc.model.raw.b)
+parameterestimates(lgc.model.raw.b)
+fitMeasures(lgc.model.raw.b)
+
+
+#PIres
+
+pain.inter.modeb= '
+#intercept
+i= ~ 1*res_26+1*res_27 + 1*res_28 + 1*res_29 + 1*res_30
+# slope
+s = ~ 0*res_26 + 1*res_27 + 2*res_28 + 3*res_29 + 4*res_30
+
+#regression of intercept and slopes onto group
+i~group
+s~group
+
+'
+
+
+lgc.modelb=growth(pain.inter.modeb,data=df_wide, missing = "ml")
+
+summary(lgc.modelb, fit.measures=TRUE)
+
+parameterEstimates(lgc.modelb)
+
+fitMeasures(lgc.modelb)
+
+```
